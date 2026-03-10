@@ -1,0 +1,31 @@
+name: 📰 Утренний дайджест новостей
+
+on:
+  schedule:
+    # Каждый день в 08:00 по Москве (05:00 UTC = МСК - 3)
+    - cron: "0 5 * * *"
+
+  # Кнопка "запустить вручную" в GitHub → Actions
+  workflow_dispatch:
+
+jobs:
+  send-digest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Скачать код репозитория
+        uses: actions/checkout@v4
+
+      - name: 🐍 Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 📦 Установить зависимости
+        run: pip install feedparser requests
+
+      - name: 🚀 Запустить парсер и отправить дайджест
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID:   ${{ secrets.CHAT_ID }}
+        run: python news_bot.py
